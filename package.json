@@ -1,0 +1,22 @@
+{
+  "name": "ingenie-business-node",
+  "version": "1.0.0",
+  "description": "Node part of the ingenie-business app",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Elton Whybrow",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "~2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "~4.16.4",
+    "express-validator": "^6.14.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.0",
+    "nodemailer": "^6.7.3"
+  }
+}
