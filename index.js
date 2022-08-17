@@ -5,6 +5,7 @@ const {
   check,
   validationResult
 } = require('express-validator');
+
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
@@ -49,34 +50,45 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   if (token == null) return res.sendStatus(401)
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, namedUser) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, tokenData) => {
     if (err) return res.sendStatus(403)
-    req.namedUser = namedUser
+    req.tokenData = tokenData
     next()
   })
 }
 
 // Routes
 app.get('/', authenticateToken, (req, res) => {
-  res.send("This '/' route is the shizzle, right!. WideSign rules...");
+  res.send(req.tokenData);
 });
 
 
 // ADD User testing add user and getting using mongoose mongoBD
 app.post('/add-user', async (req, res) => {
+  let user = req.body;
+  console.log('>>>> refresm token data', user)
+
+  let tokenData = {
+    username: user.username,
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const refreshToken = jwt.sign(tokenData, process.env.REFRESH_TOKEN_SECRET)
+
+    // console.log('refreshToken', refreshToken);
     console.log('Hashed', hashedPassword);
 
     const user = new User({
       username: req.body.username,
-      password: hashedPassword
+      password: hashedPassword,
+      refreshToken: refreshToken
     })
 
     // Mongoose save to database
     user.save()
-      .then((result) => {
-        res.sendStatus(201).send(result)
+      .then((user) => {
+        res.sendStatus(201).json(user)
       })
       .catch((err) => {
         console.log('>>>>> error', err)
@@ -98,6 +110,10 @@ app.get('/all-users', (req, res) => {
     })
 })
 
+app.post('/token', (req, res) => {
+  const refreshToken = req.body.token
+})
+
 // Admin login from ng app
 app.post('/login', [
   // validate post data
@@ -106,17 +122,17 @@ app.post('/login', [
   check('password', 'Wrong password or wrong format').exists().matches('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$£!%*?&])[A-Za-z\d$@$!%*?&].{8,}$'),
 
 ], (req, res) => {
-  let user = req.body;
-  let namedUser = {
-    username: user.username
-  }
-
-  // Finds the validation errors in this request and wraps them in an object with handy functions
+  // Finds the validation errors in this request and wraps them in an object: See express validationResult for more
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
       errors: errors.array()
     });
+  }
+
+  let user = req.body;
+  let tokenData = {
+    username: user.username,
   }
 
   User.findOne(
@@ -128,14 +144,18 @@ app.post('/login', [
       // console.log('result.password', result.password);
       // console.log('user.name', user.password);
       if (await bcrypt.compare(user.password, result.password)) {
-        const accessToken = jwt.sign(namedUser, process.env.ACCESS_TOKEN_SECRET)
-        // console.log('>>>>>', accessToken)
+        const accessToken = generateAccessToken(tokenData)
+        const refreshToken = jwt.sign(tokenData, process.env.REFRESH_TOKEN_SECRET)
+
+        console.log('refreshToken>>>>> ', refreshToken)
+        // res.cookie('JWT', accessToken)
         res.status(200).send(
           {
             success: true,
             message: 'OK you got authorised!',
             username: result.username,
-            accessToken: accessToken
+            accessToken: accessToken,
+            refreshToken: refreshToken
           })
       } else {
         res.status(401).send(
@@ -155,6 +175,10 @@ app.post('/login', [
       )
     })
 })
+
+function generateAccessToken(tokenData) {
+  return jwt.sign(tokenData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 20 }) // 900 seconds = 15min
+}
 
 
 
