@@ -1,6 +1,8 @@
 "use strict";
 require("dotenv").config();
 const express = require("express");
+var axios = require('axios');
+axios
 const {
   check,
   validationResult
@@ -61,6 +63,43 @@ function authenticateToken(req, res, next) {
 app.get('/', authenticateToken, (req, res) => {
   res.send(req.tokenData);
 });
+
+
+// get TWEETS!!
+app.get('/get-tweets', (req, res) => {
+  var config = {
+    method: 'get',
+    url: 'https://api.twitter.com/2/users/33846586/tweets?max_results=5&expansions=attachments.media_keys&tweet.fields=public_metrics,created_at,entities&media.fields=preview_image_url,url',
+    headers: {
+      'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAIwPgwEAAAAA6jV6fVhlp4PCyF2lmXZedbd9%2BqE%3DQzETLleb1TJ9WhsCD4HlU0JASHfsyEF8Q7Ha9oTa2fgzkAtdji',
+      'Cookie': 'guest_id=v1%3A163346847473478031; personalization_id="v1_6qZPH2JEzcyPZd8irhwPXg=="'
+    }
+  };
+
+  axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+      const results = JSON.stringify(response.data);
+      res.send(JSON.parse(results));
+
+      let tweets = response.data.data;
+      let media = response.data.includes.media;
+      console.log('tweets>>>>', tweets);
+      console.log('media>>>>>', media);
+
+      let wholeTweet = {
+        ...tweets,
+        ...media,
+      }
+
+      console.log('wholeTweet', wholeTweet)
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+})
+// END
 
 
 // ADD User testing add user and getting using mongoose mongoBD
