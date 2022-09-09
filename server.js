@@ -10,7 +10,7 @@ const userRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
 const twitterRouter = require('./routes/twitter');
 
-const dbURI = 'mongodb+srv://elton:Thankyou99!@ws-cluster.sruxvyb.mongodb.net/widesign?retryWrites=true&w=majority'
+const dbURI = process.env.MONGODB_URI
 
 mongoose.connect(dbURI)
   .then((result) =>

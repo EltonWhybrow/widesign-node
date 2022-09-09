@@ -7,7 +7,7 @@ router.get('/get', (req, res) => {
         method: 'get',
         url: 'https://api.twitter.com/2/users/33846586/tweets?max_results=5&expansions=attachments.media_keys&tweet.fields=public_metrics,created_at,entities&media.fields=preview_image_url,url',
         headers: {
-            'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAIwPgwEAAAAA6jV6fVhlp4PCyF2lmXZedbd9%2BqE%3DQzETLleb1TJ9WhsCD4HlU0JASHfsyEF8Q7Ha9oTa2fgzkAtdji',
+            'Authorization': `Bearer ${process.env.TWITTERAPI_TOKEN}`,
             'Cookie': 'guest_id=v1%3A163346847473478031; personalization_id="v1_6qZPH2JEzcyPZd8irhwPXg=="'
         }
     };
