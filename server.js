@@ -4,7 +4,6 @@ dotenv.config({ path: __dirname + '/.env' })
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
-const http = require('http')
 const https = require('https')
 const fs = require('fs')
 const path = require('path')
@@ -19,12 +18,12 @@ const dbURI = process.env.MONGODB_URI
 
 
 // Middleware
-// console.log(process.env.MONGODB_URI);
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://staging.widesign.co.uk");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+
 app.use(cors({
   origin: [
     "https://staging.widesign.co.uk",
@@ -32,6 +31,7 @@ app.use(cors({
   ]
 }));
 
+// Connect to Mongo and create https server
 let https_options = {
   key: fs.readFileSync(__dirname + '/certificates/private.key'),
   cert: fs.readFileSync(__dirname + '/certificates/your_domain_name.crt'),

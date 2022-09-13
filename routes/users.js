@@ -12,50 +12,52 @@ const {
 const User = require("../models/users")
 
 // GET all user from database !!testing ONLY
-router.get('/all', (req, res) => {
-    User.find()
-        .then((result) => {
-            res.send(result)
-        })
-        .catch((err) => {
-            console.log('>>>>> error', err)
-        })
-})
+// router.get('/all', (req, res) => {
+//     User.find()
+//         .then((result) => {
+//             res.send(result)
+//         })
+//         .catch((err) => {
+//             console.log('>>>>> error', err)
+//         })
+// })
+
 // POST new user to database !!testing ONLY
-router.post('/add', async (req, res) => {
-    let user = req.body;
-    console.log('>>>> refresh token data', user)
+// router.post('/add', async (req, res) => {
+//     let user = req.body;
+//     console.log('>>>> refresh token data', user)
 
-    let tokenData = {
-        username: user.username,
-    }
+//     let tokenData = {
+//         username: user.username,
+//     }
 
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const refreshToken = jwt.sign(tokenData, process.env.REFRESH_TOKEN_SECRET)
+//     try {
+//         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//         const refreshToken = jwt.sign(tokenData, process.env.REFRESH_TOKEN_SECRET)
 
-        // console.log('refreshToken', refreshToken);
-        console.log('Hashed', hashedPassword);
+//         // console.log('refreshToken', refreshToken);
+//         console.log('Hashed', hashedPassword);
 
-        const user = new User({
-            username: req.body.username,
-            password: hashedPassword,
-            refreshToken: refreshToken
-        })
+//         const user = new User({
+//             username: req.body.username,
+//             password: hashedPassword,
+//             refreshToken: refreshToken
+//         })
 
-        // Mongoose save to database
-        user.save()
-            .then((user) => {
-                res.sendStatus(201).json(user)
-            })
-            .catch((err) => {
-                console.log('>>>>> error', err)
-            })
-    } catch {
-        res.sendStatus(500).send()
-    }
+//         // Mongoose save to database
+//         user.save()
+//             .then((user) => {
+//                 res.sendStatus(201).json(user)
+//             })
+//             .catch((err) => {
+//                 console.log('>>>>> error', err)
+//             })
+//     } catch {
+//         res.sendStatus(500).send()
+//     }
 
-})
+// })
+
 // Login Check database and return token
 router.post('/login', [
     // validate post data
