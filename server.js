@@ -1,5 +1,6 @@
 "use strict";
-require("dotenv").config();
+const dotenv = require('dotenv');
+dotenv.config({ path: __dirname + '/.env' });
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -11,6 +12,8 @@ const formsRouter = require('./routes/forms');
 const twitterRouter = require('./routes/twitter');
 
 const dbURI = process.env.MONGODB_URI
+
+// console.log(process.env.MONGODB_URI);
 
 mongoose.connect(dbURI)
   .then((result) =>
@@ -28,6 +31,9 @@ mongoose.connect(dbURI)
 app.use(cors({
   origin: ["http://localhost:4200",
     "http://localhost:4201",
+    "http://localhost:3000",
+    "https://node.widesign.co.uk",
+    "https://staging.widesign.co.uk"
     // "https://ingeniebusiness-development.azurewebsites.net",
     // "https://ingeniebusiness-staging.azurewebsites.net",
     // "https://ingeniebusiness.com",
@@ -53,13 +59,20 @@ app.use('/tweets', twitterRouter);
 //   })
 // }
 
+app.get('/', (req, res) => {
+  res.send('working!');
+});
+
 // app.get('/', (req, res) => {
 //   res.send(req.tokenData);
 // });
 
-/* 
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5,  Date, X-Api-Version, X-File-Name, X-App-Version');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE, PATCH'); 
-*/
+// const options = {
+//   setHeaders(res, path, stat) {
+//     res.setHeader('Access-Control-Allow-Credentials', 'true');
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5,  Date, X-Api-Version, X-File-Name, X-App-Version');
+//     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE, PATCH');
+//   }
+// }
+

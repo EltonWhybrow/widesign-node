@@ -1,10 +1,11 @@
 {
-  "name": "ingenie-business-node",
+  "name": "wide-sign-node",
   "version": "1.0.0",
-  "description": "Node part of the ingenie-business app",
-  "main": "index.js",
+  "description": "Node part of the wide-sign app",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "startDev": "nodemon server.js",
+    "start": "server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Elton Whybrow",
