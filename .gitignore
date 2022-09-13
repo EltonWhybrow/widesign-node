@@ -4,6 +4,7 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.DS_Store
 
 # IDE - VSCode
 .vscode/*
@@ -43,6 +44,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+certificates/*
 
 # TypeScript v1 declaration files
 typings/
