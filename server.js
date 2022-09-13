@@ -1,9 +1,13 @@
 "use strict";
-const dotenv = require('dotenv');
-dotenv.config({ path: __dirname + '/.env' });
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
+const dotenv = require('dotenv')
+dotenv.config({ path: __dirname + '/.env' })
+const express = require("express")
+const cors = require("cors")
+const mongoose = require("mongoose")
+const http = require('http')
+const https = require('https')
+const fs = require('fs')
+const path = require('path')
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -13,11 +17,34 @@ const twitterRouter = require('./routes/twitter');
 
 const dbURI = process.env.MONGODB_URI
 
+
+// Middleware
 // console.log(process.env.MONGODB_URI);
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://staging.widesign.co.uk");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+app.use(cors({
+  origin: [
+    "https://staging.widesign.co.uk",
+    "http://localhost:4200",
+  ]
+}));
+
+let https_options = {
+  key: fs.readFileSync(__dirname + '/certificates/private.key'),
+  cert: fs.readFileSync(__dirname + '/certificates/your_domain_name.crt'),
+  ca: [
+    fs.readFileSync(__dirname + '/certificates/CA_root.crt'),
+    fs.readFileSync(__dirname + '/certificates/ca_bundle_certificate.crt')
+  ]
+};
 
 mongoose.connect(dbURI)
   .then((result) =>
-    app.listen(port, err => {
+
+    https.createServer(https_options, app).listen(port, err => {
       if (err) {
         console.log(`The server failed... error was: ${err}`)
       } else {
@@ -27,19 +54,6 @@ mongoose.connect(dbURI)
   )
   .catch((err) => console.log(err))
 
-// Middleware
-app.use(cors({
-  origin: ["http://localhost:4200",
-    "http://localhost:4201",
-    "http://localhost:3000",
-    "https://node.widesign.co.uk",
-    "https://staging.widesign.co.uk"
-    // "https://ingeniebusiness-development.azurewebsites.net",
-    // "https://ingeniebusiness-staging.azurewebsites.net",
-    // "https://ingeniebusiness.com",
-    // "https://www.ingeniebusiness.com"
-  ]
-}));
 
 app.use(express.json());
 app.use('/users', userRouter);
