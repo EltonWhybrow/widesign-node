@@ -16,10 +16,9 @@ const twitterRouter = require('./routes/twitter');
 
 const dbURI = process.env.MONGODB_URI
 
-
 // Middleware
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://staging.widesign.co.uk");
+  res.header("Access-Control-Allow-Origin", "https://widesign.co.uk)");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -27,6 +26,8 @@ app.use(function (req, res, next) {
 app.use(cors({
   origin: [
     "https://staging.widesign.co.uk",
+    "https://www.widesign.co.uk",
+    "https://widesign.co.uk",
     "http://localhost:4200",
   ]
 }));
