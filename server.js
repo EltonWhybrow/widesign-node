@@ -1,18 +1,22 @@
 "use strict";
 const dotenv = require('dotenv')
-dotenv.config({ path: __dirname + '/.env' })
+const path = require('path')
+dotenv.config(process.env.NODE_ENV === "production" ?
+  { path: path.resolve(__dirname + '../../../.env') } :
+  { path: __dirname + '/.env' }
+)
 const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
 const https = require('https')
 const fs = require('fs')
-const path = require('path')
 
-const port = process.env.PORT || 3000;
+const port = process.env.NODE_ENV === "production" ? process.env.PORT : 3000;
 const app = express();
 const userRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
 const twitterRouter = require('./routes/twitter');
+const instaRouter = require('./routes/instafeed')
 
 const dbURI = process.env.MONGODB_URI
 
@@ -34,12 +38,29 @@ app.use(cors({
 
 // Connect to Mongo and create https server
 let https_options = {
-  key: fs.readFileSync(__dirname + '/certificates/private.key'),
-  cert: fs.readFileSync(__dirname + '/certificates/your_domain_name.crt'),
+  // PRODUCTION CERTS
+  key: process.env.NODE_ENV === "production" ?
+    fs.readFileSync(path.resolve(__dirname + process.env.PRIVATE_KEY)) :
+    fs.readFileSync(__dirname + process.env.PRIVATE_KEY_LOCAL),
+  cert: process.env.NODE_ENV === "production" ?
+    fs.readFileSync(path.resolve(__dirname + process.env.DOMAIN_CERT)) :
+    fs.readFileSync(__dirname + process.env.DOMAIN_CERT_LOCAL),
   ca: [
-    fs.readFileSync(__dirname + '/certificates/CA_root.crt'),
-    fs.readFileSync(__dirname + '/certificates/ca_bundle_certificate.crt')
+    process.env.NODE_ENV === "production" ?
+      fs.readFileSync(path.resolve(__dirname + process.env.CA_ROOT_CERT)) :
+      fs.readFileSync(__dirname + process.env.CA_ROOT_CERT_LOCAL),
+    process.env.NODE_ENV === "production" ?
+      fs.readFileSync(path.resolve(__dirname + process.env.CA_BUNDLE_CERT)) :
+      fs.readFileSync(__dirname + process.env.CA_BUNDLE_CERT_LOCAL)
   ]
+
+  // LOCAL CERTS
+  // key: fs.readFileSync(__dirname + '/certificates/private.key'),
+  // cert: fs.readFileSync(__dirname + '/certificates/your_domain_name.crt'),
+  // ca: [
+  //   fs.readFileSync(__dirname + '/certificates/CA_root.crt'),
+  //   fs.readFileSync(__dirname + '/certificates/ca_bundle_certificate.crt')
+  // ]
 };
 
 mongoose.connect(dbURI)
@@ -60,6 +81,7 @@ app.use(express.json());
 app.use('/users', userRouter);
 app.use('/forms', formsRouter);
 app.use('/tweets', twitterRouter);
+app.use('/instafeed', instaRouter);
 
 // jwt authenticate/verify token middleware NOT WORKING NOT SURE SEE WEB SIMPLIFIED
 // function authenticateToken(req, res, next) {
