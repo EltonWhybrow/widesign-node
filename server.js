@@ -9,6 +9,7 @@ const express = require("express")
 const cors = require("cors")
 const mongoose = require("mongoose")
 const https = require('https')
+const http = require('http')
 const fs = require('fs')
 
 const port = process.env.NODE_ENV === "production" ? process.env.PORT : 3000;
@@ -63,18 +64,34 @@ let https_options = {
   // ]
 };
 
-mongoose.connect(dbURI)
-  .then((result) =>
+if (process.env.NODE_ENV === "production") {
+  mongoose.connect(dbURI)
+    .then((result) =>
 
-    https.createServer(https_options, app).listen(port, err => {
-      if (err) {
-        console.log(`The server failed... error was: ${err}`)
-      } else {
-        console.log(`The server is listening... on port: ${port}`)
-      }
-    })
-  )
-  .catch((err) => console.log(err))
+      https.createServer(https_options, app).listen(port, err => {
+        if (err) {
+          console.log(`The server failed... error was: ${err}`)
+        } else {
+          console.log(`The server is listening... on port: ${port}`)
+        }
+      })
+    )
+    .catch((err) => console.log(err))
+} else {
+  mongoose.connect(dbURI)
+
+    .then((result) =>
+      http.createServer(app).listen(port, err => {
+        if (err) {
+          console.log(`The server failed... error was: ${err}`)
+        } else {
+          console.log(`The server is listening... on port: ${port}`)
+        }
+      })
+    )
+    .catch((err) => console.log(err))
+}
+
 
 
 app.use(express.json());
