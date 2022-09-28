@@ -41,7 +41,8 @@ const User = require("../models/users")
 //         const user = new User({
 //             username: req.body.username,
 //             password: hashedPassword,
-//             refreshToken: refreshToken
+//             refreshToken: refreshToken,
+//             role: req.body.role
 //         })
 
 //         // Mongoose save to database
@@ -63,7 +64,7 @@ router.post('/login', [
     // validate post data
     // check('email', 'No email or incorrect format').exists().isEmail(),
     check('username', 'No name or wrong format').exists().matches('^[a-zA-Z-.\'\\s]+$'),
-    check('password', 'Wrong password or wrong format').exists().matches('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$£!%*?&])[A-Za-z\d$@$!%*?&].{8,}$'),
+    check('password', 'Wrong password or wrong format').exists().matches('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@$£!%*?&])[A-Za-z\d$@$!%*?&].{8,}$')
 
 ], (req, res) => {
     // Finds the validation errors in this request and wraps them in an object: See express validationResult for more
@@ -75,18 +76,26 @@ router.post('/login', [
     }
 
     let user = req.body;
-    let tokenData = {
-        username: user.username,
-    }
+
 
     User.findOne(
         { 'username': user.username },
-        { username: 1, password: 1, _id: 0 }
+        { username: 1, password: 1, role: 1, _id: 0 }
 
     )
         .then(async (result) => {
             console.log('result.password', result.password);
-            console.log('user.name', user.password);
+            console.log('user.password', user.password);
+            console.log('user.username', user.username);
+            console.log('user.role', user.role);
+            console.log('result', result);
+
+
+            let tokenData = {
+                username: result.username,
+                role: result.role
+            }
+
             if (await bcrypt.compare(user.password, result.password)) {
                 const accessToken = generateAccessToken(tokenData)
                 const refreshToken = jwt.sign(tokenData, process.env.REFRESH_TOKEN_SECRET)
