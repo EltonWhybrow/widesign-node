@@ -15,6 +15,7 @@ const fs = require('fs')
 const port = process.env.NODE_ENV === "production" ? process.env.PORT : 3000;
 const app = express();
 const userRouter = require('./routes/users');
+const todosRouter = require('./routes/todos');
 const formsRouter = require('./routes/forms');
 const twitterRouter = require('./routes/twitter');
 const instaRouter = require('./routes/instafeed')
@@ -34,6 +35,7 @@ app.use(cors({
     "https://www.widesign.co.uk",
     "https://widesign.co.uk",
     "http://localhost:4200",
+    "http://localhost:8080",
   ]
 }));
 
@@ -96,6 +98,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(express.json());
 app.use('/users', userRouter);
+app.use('/todos', todosRouter);
 app.use('/forms', formsRouter);
 app.use('/tweets', twitterRouter);
 app.use('/instafeed', instaRouter);
