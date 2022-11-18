@@ -34,6 +34,7 @@ app.use(cors({
     "https://staging.widesign.co.uk",
     "https://www.widesign.co.uk",
     "https://widesign.co.uk",
+    "https://eltonwhybrow.github.io",
     "http://localhost:4200",
     "http://localhost:8080",
   ]
