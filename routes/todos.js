@@ -20,7 +20,7 @@ router.get('/todo/:id', (req, res) => {
 
     Todo.findOne(
         { 'id': todoID },
-        { id: 1, _id: 1, title: 1, description: 1, category: 1, reminder: 1 }
+        { id: 1, _id: 1, title: 1, description: 1, notes: 1, category: 1, reminder: 1, completed: 1 }
     )
         .then((result) => {
             res.send(result)
@@ -35,7 +35,7 @@ router.delete('/todo/:id', (req, res) => {
 
     Todo.deleteOne(
         { 'id': todoID },
-        { id: 1, _id: 1, title: 1, description: 1, category: 1, reminder: 1 }
+        { id: 1, _id: 1, title: 1, description: 1, notes: 1, category: 1, reminder: 1, completed: 1 }
     )
         .then((result) => {
             res.send(result)
@@ -54,8 +54,10 @@ router.put('/todo/:id', (req, res) => {
         {
             title: updatedTodo.title,
             description: updatedTodo.description,
+            notes: updatedTodo.notes,
             category: updatedTodo.category,
-            reminder: updatedTodo.reminder
+            reminder: updatedTodo.reminder,
+            completed: updatedTodo.completed
         }
     )
         .then((result) => {
@@ -71,11 +73,13 @@ router.put('/add', async (req, res) => {
     let todo = req.body;
     try {
         const todo = new Todo({
+            id: req.body.id,
             title: req.body.title,
             description: req.body.description,
+            notes: req.body.notes,
             category: req.body.category,
-            id: req.body.id,
-            reminder: req.body.reminder
+            reminder: req.body.reminder,
+            completed: req.body.completed
         })
 
         // Mongoose save to database

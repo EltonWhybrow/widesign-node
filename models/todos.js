@@ -14,10 +14,16 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    notes: {
+        type: String
+    },
     category: {
         type: String
     },
     reminder: {
+        type: Boolean
+    },
+    completed: {
         type: Boolean
     }
 })
