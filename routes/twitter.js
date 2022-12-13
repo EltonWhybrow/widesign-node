@@ -18,8 +18,8 @@ router.get('/get', (req, res) => {
             const results = JSON.stringify(response.data);
             res.send(JSON.parse(results));
 
-            let tweets = response.data.data;
-            let media = response.data.includes.media;
+            // let tweets = response.data.data;
+            // let media = response.data.includes.media;
 
             // let newObject = {
             //     ...tweets,
